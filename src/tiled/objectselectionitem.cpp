@@ -238,15 +238,17 @@ void MapObjectLabel::updateColor()
 
 QRectF MapObjectLabel::boundingRect() const
 {
-    return mBoundingRect.adjusted(0, 0, 1, 1);
+    return mBoundingRect.translated(mScreenspaceOffset).adjusted(0, 0, 1, 1);
 }
 
 void MapObjectLabel::paint(QPainter *painter,
                            const QStyleOptionGraphicsItem *,
                            QWidget *)
 {
-    painter->save();
-    painter->translate(mScreenspaceOffset);
+    if (mObject->shape() == MapObject::Point) {
+        painter->save();
+        painter->translate(mScreenspaceOffset);
+    }
 
     painter->setRenderHint(QPainter::Antialiasing);
     painter->setBrush(Qt::black);
@@ -261,7 +263,8 @@ void MapObjectLabel::paint(QPainter *painter,
     painter->setPen(Qt::white);
     painter->drawText(mTextPos, mObject->name());
 
-    painter->restore();
+    if (mObject->shape() == MapObject::Point)
+        painter->restore();
 }
 
 
